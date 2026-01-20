@@ -1,50 +1,59 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-import asyncio
 import json
-import random
 
+import numpy as np
+from sb3_contrib import RecurrentPPO
+
+
+# Load the new model
+model = RecurrentPPO.load("cricket_hit_miss_model.zip")
 app = FastAPI()
 
-# This class matches your Unity "BallParams" C# class exactly
-class BallParams:
-    def __init__(self, speed, length, line, spin, swing):
-        self.speed_kph = speed
-        self.target_length = length
-        self.target_line = line
-        self.spin_rpm = spin
-        self.swing_angle = swing
-
-    def to_json(self):
-        return json.dumps(self.__dict__)
+# Action Decoder (Same as before)
+def decode_action(act):
+    return {
+        "speed_kph": float(np.interp(act[0], [-1, 1], [100, 160])),
+        "target_length": float(np.interp(act[1], [-1, 1], [0, 10])),
+        "target_line": float(np.interp(act[2], [-1, 1], [-1, 1])),
+        "spin_rpm": float(np.interp(act[3], [-1, 1], [0, 3000])),
+        "swing_angle": float(np.interp(act[4], [-1, 1], [-10, 10]))
+    }
 
 @app.websocket("/ws/game")
 async def websocket_endpoint(websocket: WebSocket):
-    print("⏳ Unity is trying to connect...")
     await websocket.accept()
-    print("✅ Unity Connected!")
+    
+    # State Memory
+    lstm_states = None
+    episode_starts = np.ones((1,), dtype=bool)
+    last_action = np.zeros(5)
+
+    # 1. Send the first ball (Neutral Guess)
+    action, lstm_states = model.predict(np.zeros((1, 6)), state=lstm_states, deterministic=True)
+    last_action = action[0]
+    await websocket.send_text(json.dumps(decode_action(last_action)))
 
     try:
         while True:
-            # 1. Wait for Unity to ask for a ball (or just send one every 5 seconds)
-            # For now, let's just send a new ball every 3 seconds automatically
-            await asyncio.sleep(3)
+            # 2. Wait for Unity: "hit" or "miss"
+            response = await websocket.receive_text()
+            data = json.loads(response) # Expects: {"result": "hit"} or {"result": "miss"}
+            
+            # 3. Convert to AI Number (Miss = 1.0, Hit = -1.0)
+            outcome_val = 1.0 if data["result"] == "miss" else -1.0
+            
+            print(f"User says: {data['result'].upper()} (Reward: {outcome_val})")
 
-            # 2. DECIDE: (The AI Logic goes here later)
-            # Random "Mock" Decision
-            decision = BallParams(
-                speed=random.uniform(120.0, 150.0),      # Fast to Medium
-                length=random.uniform(2.0, 8.0),         # Yorker to Short
-                line=random.uniform(-0.5, 0.5),          # Leg to Off stump
-                spin=random.uniform(0, 3000),            # No spin to heavy spin
-                swing=random.uniform(-10, 10)            # Slight swing
-            )
+            # 4. Prepare Observation [Last_Action + Outcome]
+            obs = np.concatenate((last_action, [outcome_val])).reshape(1, -1)
+            
+            # 5. Predict Next Ball
+            action, lstm_states = model.predict(obs, state=lstm_states, episode_start=episode_starts)
+            last_action = action[0]
+            episode_starts = np.zeros((1,), dtype=bool)
 
-            # 3. SEND: Send the JSON to Unity
-            json_payload = decision.to_json()
-            print(f"📡 Sending to Unity: {json_payload}")
-            await websocket.send_text(json_payload)
+            # 6. Send
+            await websocket.send_text(json.dumps(decode_action(last_action)))
 
     except WebSocketDisconnect:
-        print("❌ Unity Disconnected")
-    except Exception as e:
-        print(f"⚠️ Error: {e}")
+        print("Disconnected")

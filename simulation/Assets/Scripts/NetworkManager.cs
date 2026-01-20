@@ -60,4 +60,17 @@ public class NetworkManager : MonoBehaviour
     {
         if (websocket != null) await websocket.Close();
     }
+
+    public async void SendJson(string json)
+    {
+        if (websocket.State == NativeWebSocket.WebSocketState.Open)
+        {
+            Debug.Log("Sending: " + json);
+            await websocket.SendText(json);
+        }
+        else
+        {
+            Debug.LogWarning("WebSocket is not connected. Cannot send message.");
+        }
+    }
 }

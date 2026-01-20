@@ -222,3 +222,6 @@ Thumbs.db
 # --- NODE/WEB (Frontend) ---
 node_modules/
 .next/
+
+#ignore .zip files
+*.zip
