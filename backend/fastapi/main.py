@@ -6,7 +6,7 @@ from sb3_contrib import RecurrentPPO
 
 
 # Load the new model
-model = RecurrentPPO.load("cricket_hit_miss_model.zip")
+model = RecurrentPPO.load("rl_model.zip")
 app = FastAPI()
 
 # Action Decoder (Same as before)
