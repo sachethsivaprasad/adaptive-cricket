@@ -1,37 +1,43 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Required for Keyboard.current
+using UnityEngine.InputSystem;
 
 public class SimpleUI : MonoBehaviour
 {
     public NetworkManager networkManager;
+    private bool gameStarted = false;
 
     void Update()
     {
-        // Check if keyboard is connected to avoid errors
         if (Keyboard.current == null) return;
 
-        // Press 'H' for HIT (Bad for AI)
-        if (Keyboard.current.hKey.wasPressedThisFrame)
+        // Press 'S' to request the very first ball
+        if (!gameStarted && Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            gameStarted = true;
+            SendOutcome("start");
+            Debug.Log("Game Started: Requesting first ball...");
+        }
+
+        // Press 'H' for HIT
+        if (gameStarted && Keyboard.current.hKey.wasPressedThisFrame)
         {
             SendOutcome("hit");
         }
 
-        // Press 'M' for MISS (Good for AI)
-        if (Keyboard.current.mKey.wasPressedThisFrame)
+        // Press 'M' for MISS
+        if (gameStarted && Keyboard.current.mKey.wasPressedThisFrame)
         {
             SendOutcome("miss");
         }
     }
 
-    void SendOutcome(string result)
+    void SendOutcome(string resultValue)
     {
         if (networkManager != null)
         {
-            // Construct JSON: {"result": "hit"} or {"result": "miss"}
-            string json = "{\"result\": \"" + result + "\"}";
+            // This sends the result and tells Python "I am ready for the next one"
+            string json = "{\"result\": \"" + resultValue + "\"}";
             networkManager.SendJson(json);
-            
-            Debug.Log("Sent Result: " + result.ToUpper());
         }
     }
 }
