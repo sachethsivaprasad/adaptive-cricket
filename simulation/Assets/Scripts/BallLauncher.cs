@@ -10,12 +10,20 @@ public class BallLauncher : MonoBehaviour
 
     [Header("Settings")]
     public float gravity = 9.81f;
+    
+    [Header("Lifecycle")]
+    [SerializeField] private Vector2 ballLifetimeSecondsRange = new Vector2(5f, 10f);
 
     // This function acts as the "Trigger"
     public void Bowl(float speedKph, float targetLengthM, float targetLineM, float spinRpm, float swingAngle)
     {
         // 1. Create the ball at the release point
         Rigidbody ball = Instantiate(ballPrefab, releasePoint.position, Quaternion.identity);
+        
+        // 1b. Auto-cleanup: delete this ball after 5–10 seconds so old deliveries don't pile up.
+        // (This doesn't affect physics; Unity will destroy the GameObject after the delay.)
+        float lifetime = Mathf.Max(0.1f, UnityEngine.Random.Range(ballLifetimeSecondsRange.x, ballLifetimeSecondsRange.y));
+        Destroy(ball.gameObject, lifetime);
 
         // 2. Add the Magnus Effect script dynamically (if not already on the prefab)
         if (ball.GetComponent<MagnusEffect>() == null)
