@@ -1,0 +1,21 @@
+# Core API & Server
+fastapi==0.124.2
+uvicorn[standard]==0.40.0
+websockets==16.0
+python-dotenv==1.2.1
+watchfiles==1.1.1
+
+# AI & Reinforcement Learning
+torch==2.9.1
+stable-baselines3==2.7.1
+sb3-contrib==2.7.1
+gymnasium==1.2.3
+Shimmy==2.0.0
+numpy==2.4.1
+pandas==2.3.3
+
+# Utilities
+pydantic==2.12.5
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+colorama==0.4.6
