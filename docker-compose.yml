@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 1. Database (PostgreSQL)
+  # Stores user profiles, sessions, and ball history
+  db:
+    image: postgres:15
+    container_name: cricket_db
+    environment:
+      POSTGRES_DB: cricket_stats
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432" # Maps container port to localhost:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. Message Broker (Zookeeper)
+  # Kafka needs this to manage its clusters
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: cricket_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+
+  # 3. Streaming Platform (Kafka)
+  # The high-speed pipe between FastAPI and Django
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: cricket_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes:
+  postgres_data:
