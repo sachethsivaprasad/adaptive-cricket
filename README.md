@@ -14,7 +14,7 @@ The project is a Monorepo divided into three core components:
 | :--- | :--- | :--- |
 | **Simulation** | Unity + C# | Physics engine, visuals, and user input. |
 | **Backend** | Python (FastAPI) | Hosting the RL Agent (Brain) & WebSocket Server. |
-| **Dashboard** | Django + Next.js | *[In Progress]* Analytics and performance visualization. |
+| **Dashboard** | Next.js | Analytics and performance visualization. Runs with sample data; Kafka integration planned. |
 
 ## 📂 Project Structure
 
@@ -29,6 +29,7 @@ adaptive-cricket/
 │   │   ├── manage.py
 │   │   └── dashboard/
 │   ├── requirements.txt      # Python Dependencies
+├── dashboard/                # Next.js Dashboard (sample data; Kafka-ready)
 ├── simulation/
 │   ├── Assets/               # Unity Scripts & Prefabs
 │   └── ProjectSettings/      # Unity Configuration
@@ -112,7 +113,19 @@ Bash
 
 *You should see: `Waiting for application startup... Application startup complete.`*
 
-### Step 2: Start the Simulation
+### Step 2: Start the Dashboard (Optional)
+
+Run the analytics dashboard (sample data; Kafka integration later):
+
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). See `dashboard/KAFKA_INTEGRATION.md` for Kafka setup.
+
+### Step 3: Start the Simulation
 
 1.  Open **Unity Hub** -> Add Project -> Select the `simulation` folder.
 

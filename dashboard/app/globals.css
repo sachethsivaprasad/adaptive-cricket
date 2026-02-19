@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cricket-green: #0d4d2b;
+  --cricket-gold: #c9a227;
+  --cricket-cream: #f5e6d3;
+  --cricket-pitch: #2d5a27;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

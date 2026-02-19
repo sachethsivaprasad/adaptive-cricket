@@ -14,6 +14,12 @@ Shimmy==2.0.0
 numpy==2.4.1
 pandas==2.3.3
 
+# Kafka
+kafka-python==2.0.2
+
+# Database
+psycopg2-binary==2.9.9
+
 # Utilities
 pydantic==2.12.5
 python-dateutil==2.9.0.post0
