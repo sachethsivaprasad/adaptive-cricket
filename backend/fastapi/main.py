@@ -143,11 +143,11 @@ except NoBrokersAvailable:
 def decode_action(act):
     """Converts AI normalized values (-1..1) to Real Cricket Units"""
     return {
-        "speed_kph": float(np.interp(act[0], [-1, 1], [100, 160])),
+        "speed_kph": float(np.interp(act[0], [-1, 1], [80, 100])),
         "target_length": float(np.interp(act[1], [-1, 1], [0, 10])),
         "target_line": float(np.interp(act[2], [-1, 1], [-1, 1])),
-        "spin_rpm": float(np.interp(act[3], [-1, 1], [0, 3000])),
-        "swing_angle": float(np.interp(act[4], [-1, 1], [-10, 10]))
+        "spin_rpm": float(np.interp(act[3], [-1, 1], [0, 100])),
+        "swing_angle": float(np.interp(act[4], [-1, 1], [-40, 40]))
     }
 
 def send_to_kafka(ball_params, result):

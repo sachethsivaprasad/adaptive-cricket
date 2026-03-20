@@ -1,3 +1,4 @@
+
 # Kafka Integration Guide
 
 **Kafka integration is implemented.** The dashboard fetches from FastAPI's `/api/telemetry` endpoint, which consumes from the `cricket_telemetry` topic.

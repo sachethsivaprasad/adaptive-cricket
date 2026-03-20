@@ -1,6 +1,11 @@
 Adaptive Cricket: Final Year Project
 
-python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+docker-compose up -d
+docker ps
+
+backend/fastapi ===== python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+
 
 # 🏏 Adaptive Cricket 
 
