@@ -4,7 +4,7 @@ docker-compose up -d
 docker ps
 
 backend/fastapi ===== python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
-
+backend/flask  ====== python app.py
 
 
 # 🏏 Adaptive Cricket 
@@ -120,7 +120,7 @@ Bash
 
 ### Step 2: Start the Dashboard (Optional)
 
-Run the analytics dashboard (sample data; Kafka integration later):
+Run the analytics dashboard (telemetry via Flask; Kafka integration later):
 
 ```bash
 cd dashboard

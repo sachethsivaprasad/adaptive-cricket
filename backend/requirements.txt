@@ -25,3 +25,7 @@ pydantic==2.12.5
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 colorama==0.4.6
+
+# Dashboard (Flask)
+flask
+flask-cors

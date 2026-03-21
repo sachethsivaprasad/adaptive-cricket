@@ -25,3 +25,25 @@ export interface SessionStats {
   hitRate: number;
   missRate: number;
 }
+
+export interface PersonaCommandPayload {
+  id: string;
+  name?: string;
+  ball: BallParameters;
+}
+
+export interface FastapiStateSnapshot {
+  type?: "state";
+  mode: "rl" | "manual" | "persona";
+  manual_ball?: BallParameters | null;
+  persona_id?: string | null;
+  persona_ball?: BallParameters | null;
+  last_ball_params?: BallParameters | null;
+  connections?: { unity: number; flask: number };
+}
+
+export interface FastapiControlState {
+  bridge_connected: boolean;
+  bridge_last_error: string | null;
+  fastapi_state: FastapiStateSnapshot;
+}

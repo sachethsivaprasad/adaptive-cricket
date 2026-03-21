@@ -1,11 +1,11 @@
 
 # Kafka Integration Guide
 
-**Kafka integration is implemented.** The dashboard fetches from FastAPI's `/api/telemetry` endpoint, which consumes from the `cricket_telemetry` topic.
+**Kafka integration is implemented.** The dashboard fetches from Flask's `/api/telemetry` endpoint, which consumes from the `cricket_telemetry` topic.
 
 ## Current Data Flow
 
-- **FastAPI** runs a background Kafka consumer, stores messages in a buffer
+- **Flask** runs a background Kafka consumer, stores messages in a buffer
 - **GET /api/telemetry** returns the buffer
 - **Dashboard** fetches from that endpoint; falls back to sample data if API is down
 
@@ -33,14 +33,18 @@ Matches `CricketTelemetry` in `lib/types.ts`:
 # 1. Start Kafka + Postgres (via Docker)
 docker-compose up -d zookeeper kafka db
 
-# 2. Start FastAPI (consumes + produces Kafka, persists to Postgres)
+# 2. Start FastAPI (simulation-only: produces to Kafka, serves WebSocket)
 cd backend/fastapi
 uvicorn main:app --reload --port 8000
 
-# 3. (Optional) Seed sample data if not running Unity
+# 3. Start Flask (consumes from Kafka, serves dashboard telemetry API)
+cd backend/flask
+python app.py
+
+# 4. (Optional) Seed sample data if not running Unity
 cd backend && python seed_kafka.py
 
-# 4. Start Dashboard
+# 5. Start Dashboard
 cd dashboard && npm run dev
 ```
 

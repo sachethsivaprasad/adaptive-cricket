@@ -5,6 +5,7 @@ import {
   BallParametersChart,
   RecentBallsTable,
   WeaknessAnalysis,
+  ControlPanel,
 } from "@/components/dashboard";
 import { AutoRefresh } from "@/components/AutoRefresh";
 
@@ -39,6 +40,9 @@ export default async function DashboardPage() {
         </div>
         <div className="mt-8">
           <WeaknessAnalysis telemetry={telemetry} />
+        </div>
+        <div className="mt-8">
+          <ControlPanel />
         </div>
         <div className="mt-8">
           <RecentBallsTable telemetry={telemetry} />
