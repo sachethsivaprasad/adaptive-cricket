@@ -1,43 +1,109 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// S = start game (sends "start", server returns first ball JSON).
+/// Reaction window arms when a ball is actually spawned (not when server message is queued).
+/// Space = hit, timeout = miss. Next physical ball only after current one is destroyed (BowlingMachine).
+/// </summary>
 public class SimpleUI : MonoBehaviour
 {
-    public NetworkManager networkManager;
-    private bool gameStarted = false;
+    [Header("Dependencies")]
+    [SerializeField] private NetworkManager networkManager;
+    [SerializeField] private BowlingMachine bowlingMachine;
 
-    void Update()
+    [Header("Input")]
+    [SerializeField] private Key startKey = Key.S;
+    [SerializeField] private Key hitKey = Key.Space;
+
+    [Header("Reaction window (seconds)")]
+    [Tooltip("Random window per delivery: min to max.")]
+    [SerializeField] private Vector2 reactionWindowSeconds = new Vector2(5f, 10f);
+
+    private bool gameStarted;
+    private bool waitingForShot;
+    private float reactionDeadline;
+
+    private void Start()
+    {
+        if (bowlingMachine != null)
+            bowlingMachine.OnDeliverySpawned += OnDeliverySpawned;
+    }
+
+    private void OnDestroy()
+    {
+        if (bowlingMachine != null)
+            bowlingMachine.OnDeliverySpawned -= OnDeliverySpawned;
+    }
+
+    /// <summary>Physical ball just spawned — start hit/miss window.</summary>
+    private void OnDeliverySpawned()
+    {
+        if (!gameStarted)
+            return;
+
+        if (waitingForShot)
+        {
+            Debug.LogWarning("[SimpleUI] New delivery spawned while still in reaction window — overlapping windows.");
+        }
+
+        float window = Random.Range(
+            Mathf.Max(0.5f, reactionWindowSeconds.x),
+            Mathf.Max(reactionWindowSeconds.x + 0.01f, reactionWindowSeconds.y));
+        waitingForShot = true;
+        reactionDeadline = Time.time + window;
+        Debug.Log($"[SimpleUI] Window: {window:0.0}s — {hitKey} = HIT, else MISS.");
+    }
+
+    private void Update()
     {
         if (Keyboard.current == null) return;
 
-        // Press 'S' to request the very first ball
-        if (!gameStarted && Keyboard.current.sKey.wasPressedThisFrame)
+        if (!gameStarted && Keyboard.current[startKey].wasPressedThisFrame)
         {
             gameStarted = true;
             SendOutcome("start");
-            Debug.Log("Game Started: Requesting first ball...");
+            Debug.Log("[SimpleUI] Game started — waiting for first delivery.");
         }
 
-        // Press 'H' for HIT
-        if (gameStarted && Keyboard.current.hKey.wasPressedThisFrame)
+        if (!gameStarted || !waitingForShot) return;
+
+        if (Keyboard.current[hitKey].wasPressedThisFrame)
         {
+            waitingForShot = false;
             SendOutcome("hit");
+            Debug.Log("[SimpleUI] HIT");
+            return;
         }
 
-        // Press 'M' for MISS
-        if (gameStarted && Keyboard.current.mKey.wasPressedThisFrame)
+        if (Time.time >= reactionDeadline)
         {
+            waitingForShot = false;
             SendOutcome("miss");
+            Debug.Log("[SimpleUI] MISS (timeout)");
         }
     }
 
-    void SendOutcome(string resultValue)
+    private void SendOutcome(string resultValue)
     {
-        if (networkManager != null)
-        {
-            // This sends the result and tells Python "I am ready for the next one"
-            string json = "{\"result\": \"" + resultValue + "\"}";
-            networkManager.SendJson(json);
-        }
+        if (networkManager == null) return;
+        string json = "{\"result\": \"" + resultValue + "\"}";
+        networkManager.SendJson(json);
+    }
+
+    public void ReportHitFromBat()
+    {
+        if (!gameStarted || !waitingForShot) return;
+        waitingForShot = false;
+        SendOutcome("hit");
+        Debug.Log("[SimpleUI] HIT (bat)");
+    }
+
+    public void ReportMissFromBat()
+    {
+        if (!gameStarted || !waitingForShot) return;
+        waitingForShot = false;
+        SendOutcome("miss");
+        Debug.Log("[SimpleUI] MISS (bat)");
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Required for the new system
 
 public class BallLauncher : MonoBehaviour
 {
@@ -14,8 +13,8 @@ public class BallLauncher : MonoBehaviour
     [Header("Lifecycle")]
     [SerializeField] private Vector2 ballLifetimeSecondsRange = new Vector2(5f, 10f);
 
-    // This function acts as the "Trigger"
-    public void Bowl(float speedKph, float targetLengthM, float targetLineM, float spinRpm, float swingAngle)
+    /// <returns>Spawned ball Rigidbody (caller tracks until destroyed).</returns>
+    public Rigidbody Bowl(float speedKph, float targetLengthM, float targetLineM, float spinRpm, float swingAngle)
     {
         // 1. Create the ball at the release point
         Rigidbody ball = Instantiate(ballPrefab, releasePoint.position, Quaternion.identity);
@@ -50,6 +49,8 @@ public class BallLauncher : MonoBehaviour
         // Calculate spin axis based on seam angle
         Vector3 spinAxis = Quaternion.Euler(0, swingAngle, 0) * Vector3.right;
         ball.angularVelocity = spinAxis * spinRad;
+
+        return ball;
     }
 
     // Physics calculation to hit a target X,Z given a speed
@@ -72,15 +73,4 @@ public class BallLauncher : MonoBehaviour
 
         return finalVelocity;
     }
-
-    // TEST BUTTON: Press Spacebar to fire
-    void Update()
-    {
-        // New Input System check
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            Bowl(100f, 4.0f, 0f, 0f, 0f);
-            Debug.Log("Fired!");
-        }
-    }
-}   
+}

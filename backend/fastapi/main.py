@@ -191,6 +191,8 @@ async def _handle_unity_feedback(payload: dict):
     if user_result not in ["start", "hit", "miss"]:
         return
 
+    print(f"[ws] <- {payload}")
+
     async with state._lock:
         # Save PREVIOUS delivered ball against feedback.
         if user_result in ["hit", "miss"] and state.last_ball_params is not None:
@@ -203,6 +205,7 @@ async def _handle_unity_feedback(payload: dict):
             state.lstm_states = None
 
     next_ball = await _next_ball_from_state(obs)
+    print(f"[ws] -> {next_ball}")
     await manager.send_to_unity(next_ball)
     await manager.send_to_flask({"type": "next_ball", "ball": next_ball, "source_result": user_result})
 
