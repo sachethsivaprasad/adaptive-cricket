@@ -635,7 +635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimpleUI
   networkManager: {fileID: 374119636}
-  bowlingMachine: {fileID: 0}
+  bowlingMachine: {fileID: 374119635}
   startKey: 33
   hitKey: 1
   reactionWindowSeconds: {x: 5, y: 10}

@@ -40,11 +40,9 @@ export function WeaknessAnalysis({ telemetry }: { telemetry: CricketTelemetry[] 
   const indicators = computeWeaknessIndicators(telemetry);
   if (!indicators) {
     return (
-      <div className="rounded-xl border border-cricket-gold/20 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-cricket-green">
-          Weakness Analysis
-        </h2>
-        <p className="mt-2 text-sm text-cricket-green/70">
+      <div className="dashboard-card p-6">
+        <h2 className="text-lg font-semibold text-slate-900">Weakness Analysis</h2>
+        <p className="mt-2 text-sm text-slate-500">
           Play at least 6 balls (3 hits, 3 misses) to see weakness indicators.
         </p>
       </div>
@@ -54,54 +52,85 @@ export function WeaknessAnalysis({ telemetry }: { telemetry: CricketTelemetry[] 
   const weaknesses = indicators.filter((i) => i.weakness);
 
   return (
-    <div className="rounded-xl border border-cricket-gold/20 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-cricket-green">
-        Weakness Analysis
-      </h2>
-      <p className="mt-1 text-sm text-cricket-green/70">
+    <div className="dashboard-card p-6">
+      <h2 className="text-lg font-semibold text-slate-900">Weakness Analysis</h2>
+      <p className="mt-1 text-sm text-slate-500">
         Ball types that tend to cause more misses than hits
       </p>
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-wrap gap-2">
         {weaknesses.length > 0 ? (
           weaknesses.map((w) => (
-            <div
+            <span
               key={w.param}
-              className="rounded-lg border border-cricket-gold/30 bg-cricket-cream/50 px-4 py-2"
+              className="inline-flex max-w-full items-center rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-700 shadow-sm"
             >
-              <span className="font-medium text-cricket-green">{w.label}</span>
-              <span className="ml-2 text-sm text-cricket-green/70">
-                (Miss avg: {typeof w.missAvg === "number" && w.param.includes("rpm") ? Math.round(w.missAvg) : w.missAvg.toFixed(1)} vs Hit: {typeof w.hitAvg === "number" && w.param.includes("rpm") ? Math.round(w.hitAvg) : w.hitAvg.toFixed(1)})
+              <span className="truncate">{w.label}</span>
+              <span className="ml-2 shrink-0 text-xs font-normal text-red-600/90">
+                (Miss avg:{" "}
+                {typeof w.missAvg === "number" && w.param.includes("rpm")
+                  ? Math.round(w.missAvg)
+                  : w.missAvg.toFixed(1)}{" "}
+                vs Hit:{" "}
+                {typeof w.hitAvg === "number" && w.param.includes("rpm")
+                  ? Math.round(w.hitAvg)
+                  : w.hitAvg.toFixed(1)}
+                )
               </span>
-            </div>
+            </span>
           ))
         ) : (
-          <p className="text-sm text-cricket-green/70">
-            Not enough difference yet. Keep playing to uncover weaknesses.
-          </p>
+          <span className="inline-flex rounded-full bg-violet-50 px-4 py-1.5 text-sm font-medium text-violet-700">
+            Not enough difference yet — keep playing to uncover weaknesses.
+          </span>
         )}
       </div>
-      <details className="mt-4">
-        <summary className="cursor-pointer text-sm text-cricket-green/70 hover:text-cricket-green">
-          View all parameter comparisons
+      <details className="group mt-6 overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 shadow-sm">
+        <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-violet-600 transition hover:bg-slate-50 hover:text-violet-700 [&::-webkit-details-marker]:hidden">
+          <span className="inline-flex items-center gap-1">
+            View detailed breakdown
+            <span className="text-violet-400 transition group-open:rotate-180">▾</span>
+          </span>
         </summary>
-        <table className="mt-2 w-full text-sm">
-          <thead>
-            <tr>
-              <th className="text-left">Parameter</th>
-              <th className="text-right">Avg when Missed</th>
-              <th className="text-right">Avg when Hit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {indicators.map((i) => (
-              <tr key={i.param}>
-                <td>{i.label}</td>
-                <td className="text-right">{i.param.includes("rpm") ? Math.round(i.missAvg) : i.missAvg.toFixed(2)}</td>
-                <td className="text-right">{i.param.includes("rpm") ? Math.round(i.hitAvg) : i.hitAvg.toFixed(2)}</td>
+        <div className="border-t border-slate-100 px-4 pb-4 pt-2">
+          <table className="w-full text-sm text-slate-700">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="pb-2 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Parameter
+                </th>
+                <th className="pb-2 pr-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Avg when Missed
+                </th>
+                <th className="pb-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Avg when Hit
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {indicators.map((i) => (
+                <tr key={i.param} className="hover:bg-white/80">
+                  <td className="py-2.5 pr-4">
+                    <span
+                      className={
+                        i.weakness
+                          ? "inline-flex rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700"
+                          : "inline-flex rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700"
+                      }
+                    >
+                      {i.label}
+                    </span>
+                  </td>
+                  <td className="py-2.5 pr-4 text-right tabular-nums text-slate-600">
+                    {i.param.includes("rpm") ? Math.round(i.missAvg) : i.missAvg.toFixed(2)}
+                  </td>
+                  <td className="py-2.5 text-right tabular-nums text-slate-600">
+                    {i.param.includes("rpm") ? Math.round(i.hitAvg) : i.hitAvg.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </details>
     </div>
   );

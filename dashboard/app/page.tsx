@@ -14,23 +14,23 @@ export default async function DashboardPage() {
   const stats = computeStats(telemetry);
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-cricket-gold/30 bg-cricket-green text-cricket-cream">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold tracking-tight">
-            🏏 Adaptive Cricket Dashboard
+    <div className="min-h-screen bg-slate-100 bg-[radial-gradient(ellipse_120%_65%_at_50%_-8%,rgb(245,243,255),rgb(241,245,249))] pb-12">
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <header className="rounded-3xl bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] sm:p-8">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Adaptive Cricket Dashboard
           </h1>
-          <p className="mt-1 text-sm text-cricket-cream/80">
+          <p className="mt-2 text-sm text-white/90">
             Analytics and performance visualization •
             {source === "kafka" ? (
-              <span className="text-green-300"> Live (Kafka)</span>
+              <span className="text-emerald-200"> Live (Kafka)</span>
             ) : (
-              <span> Sample data (start Kafka + FastAPI for live)</span>
+              <span className="text-white/80"> Sample data (start Kafka + FastAPI for live)</span>
             )}
             <AutoRefresh />
           </p>
-        </div>
-      </header>
+        </header>
+      </div>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <StatsCards stats={stats} />

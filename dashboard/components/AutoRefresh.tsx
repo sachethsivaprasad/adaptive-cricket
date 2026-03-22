@@ -16,7 +16,7 @@ export function AutoRefresh() {
   }, [router]);
 
   return (
-    <span className="text-xs text-cricket-green/60 ml-2">
+    <span className="ml-2 text-xs text-white/70">
       (auto-refresh every 10s)
     </span>
   );

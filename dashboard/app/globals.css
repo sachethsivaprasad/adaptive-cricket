@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --cricket-green: #0d4d2b;
-  --cricket-gold: #c9a227;
-  --cricket-cream: #f5e6d3;
-  --cricket-pitch: #2d5a27;
+@layer components {
+  /* Elevated surface: reads clearly over slate / tinted canvas */
+  .dashboard-card {
+    @apply rounded-2xl border border-slate-200/90 bg-white shadow-[0_2px_4px_-1px_rgb(15,23,42,0.05),0_10px_28px_-8px_rgb(15,23,42,0.12)];
+  }
 }
 
 body {

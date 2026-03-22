@@ -31,24 +31,41 @@ function aggregateByOutcome(telemetry: CricketTelemetry[]) {
   }));
 }
 
+const tooltipStyle = {
+  borderRadius: "12px",
+  border: "none",
+  boxShadow: "0 2px 8px rgb(0 0 0 / 0.08)",
+};
+
 export function OutcomeChart({ telemetry }: { telemetry: CricketTelemetry[] }) {
   const data = aggregateByOutcome(telemetry);
 
   return (
-    <div className="rounded-xl border border-cricket-gold/20 bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-cricket-green">
-        Hit vs Miss Over Time
-      </h2>
+    <div className="dashboard-card p-6">
+      <h2 className="mb-4 text-lg font-semibold text-slate-900">Hit vs Miss Over Time</h2>
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#0d4d2b20" />
-            <XAxis dataKey="time" stroke="#0d4d2b" fontSize={12} />
-            <YAxis stroke="#0d4d2b" fontSize={12} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="hits" fill="#c9a227" name="Hits" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="misses" fill="#0d4d2b" name="Misses" radius={[4, 4, 0, 0]} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#f1f5f9"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="time"
+              tick={{ fill: "#64748b", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "#64748b", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
+            <Bar dataKey="hits" fill="#8b5cf6" name="Hits" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="misses" fill="#e2e8f0" name="Misses" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

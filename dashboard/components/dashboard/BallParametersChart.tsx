@@ -37,6 +37,12 @@ function computeAverages(telemetry: CricketTelemetry[]) {
   }));
 }
 
+const tooltipStyle = {
+  borderRadius: "12px",
+  border: "none",
+  boxShadow: "0 2px 8px rgb(0 0 0 / 0.08)",
+};
+
 export function BallParametersChart({
   telemetry,
 }: {
@@ -45,32 +51,33 @@ export function BallParametersChart({
   const data = computeAverages(telemetry);
 
   return (
-    <div className="rounded-xl border border-cricket-gold/20 bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-cricket-green">
-        Ball Parameters: Hit vs Miss
-      </h2>
+    <div className="dashboard-card p-6">
+      <h2 className="mb-4 text-lg font-semibold text-slate-900">Ball Parameters: Hit vs Miss</h2>
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data}>
-            <PolarGrid stroke="#0d4d2b40" />
-            <PolarAngleAxis dataKey="subject" stroke="#0d4d2b" fontSize={11} />
-            <PolarRadiusAxis stroke="#0d4d2b" fontSize={10} />
+            <PolarGrid stroke="#e2e8f0" />
+            <PolarAngleAxis
+              dataKey="subject"
+              tick={{ fill: "#64748b", fontSize: 11 }}
+            />
+            <PolarRadiusAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
             <Radar
               name="When Hit"
               dataKey="hit"
-              stroke="#c9a227"
-              fill="#c9a227"
-              fillOpacity={0.4}
+              stroke="#7c3aed"
+              fill="#7c3aed"
+              fillOpacity={0.35}
             />
             <Radar
               name="When Missed"
               dataKey="miss"
-              stroke="#0d4d2b"
-              fill="#0d4d2b"
-              fillOpacity={0.3}
+              stroke="#94a3b8"
+              fill="#cbd5e1"
+              fillOpacity={0.2}
             />
-            <Legend />
-            <Tooltip />
+            <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
+            <Tooltip contentStyle={tooltipStyle} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
