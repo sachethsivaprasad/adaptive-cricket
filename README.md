@@ -6,6 +6,8 @@ docker ps
 backend/fastapi ===== python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 backend/flask  ====== python app.py
 
+dashboard ====== npm run dev
+
 
 # 🏏 Adaptive Cricket 
 
